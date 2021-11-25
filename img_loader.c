@@ -166,12 +166,17 @@ void image_loader_close(ImageLoaderData* data, int force) {
         data->loader->img_close(data);
         data->image_data = NULL;
         data->data = NULL;
+        data->fd = -1;
     }
 }
 
 static void image_loader_free_data(ImageLoaderContext*context, ImageLoaderData* data) {
     if(data->data)
         image_loader_close(data, 1);
+    else if(data->fd != -1) {
+        close(data->fd);
+        data->fd = -1;
+    }
 
     if(data->flags & IMG_DATA_FREE_NAME)
         free((void*)data->name);
